@@ -1,0 +1,48 @@
+{% from "_render_field.html" import render_field, render_radio_fields %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Run Tests</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    
+    <link href="{{ url_for('static', filename='theme.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container theme-showcase" role="main">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="well bs-component">
+              <form class="form-horizontal" method="POST"  action="{{ url_for('run_test') }}">
+                {{ form.csrf_token }}
+                <fieldset>
+                  <legend>Add Run Details</legend>
+                  {{ render_field(form.env_name, placeholder='Enviornment Name set while setting up DB Details') }}
+                  {{ render_field(form.run_name, placeholder='Run Name') }}
+                  {{ render_field(form.query_id, placeholder='query_id') }}
+                  {{ render_field(form.total_runs, placeholder='total_runs') }}
+                  {{ render_field(form.total_time, placeholder='total_time') }}
+                  <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                      <button type="reset" class="btn btn-default">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Next</button>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>
