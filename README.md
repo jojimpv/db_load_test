@@ -1,4 +1,4 @@
-# snow test suite
+# Database test suite
 
 ## Env Set Up
 * This code requires spark.
