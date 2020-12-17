@@ -102,6 +102,8 @@ def run_test():
         query_str = query_str.replace(" ", "")
         query_id_list = query_str.split(",")
         total_limit = int(content["total_runs"])
+        if total_limit < len(query_id_list):
+            total_limit = len(query_id_list)
         run_for = int(content["total_time"])
         main(
             spark,
