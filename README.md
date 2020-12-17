@@ -6,7 +6,7 @@
 * pip install -r requirements.txt
 
 ## Test Data Set up
-* Use the queries.xlsx as a template and set up your test data  
+* Use the queries.xlsx in the base path as a template and set up your test data  
 * PARAM is a keyword in the excel  
 * You can pass as many parameters. If you need more than 3 parameters add columns param4, param5 and call them $PARAM4  
 

@@ -27,10 +27,10 @@
                 <fieldset>
                   <legend>Add Run Details</legend>
                   {{ render_field(form.env_name, placeholder='Enviornment Name set while setting up DB Details') }}
-                  {{ render_field(form.run_name, placeholder='Run Name') }}
-                  {{ render_field(form.query_id, placeholder='query_id') }}
-                  {{ render_field(form.total_runs, placeholder='total_runs') }}
-                  {{ render_field(form.total_time, placeholder='total_time') }}
+                  {{ render_field(form.run_name, placeholder='Give a unique Run Name to identify this run') }}
+                  {{ render_field(form.query_id, placeholder='Enter the query id as comma separated values e.g 1,2,3') }}
+                  {{ render_field(form.total_runs, placeholder='total runs: this is equivalent to number of concurrent users') }}
+                  {{ render_field(form.total_time, placeholder='total time you want to run this test') }}
                   <div class="form-group">
                     <div class="col-lg-10 col-lg-offset-2">
                       <button type="reset" class="btn btn-default">Cancel</button>

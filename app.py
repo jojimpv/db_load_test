@@ -98,7 +98,9 @@ def run_test():
         table_name = p_dict["table_name"]
         file_name = f"uploads/{p_dict['filename']}"
         run_name = content["run_name"]
-        query_id_list = eval(f'[{content["query_id"]}]')
+        query_str = content["query_id"]
+        query_str = query_str.replace(" ", "")
+        query_id_list = query_str.split(",")
         total_limit = int(content["total_runs"])
         run_for = int(content["total_time"])
         main(
@@ -112,7 +114,6 @@ def run_test():
             run_for=run_for,
             table_name=table_name,
         )
-        # return files_index.render_autoindex()
         return redirect(url_for("autoindex"))
     return render_template("run_test.html", form=form)
 
