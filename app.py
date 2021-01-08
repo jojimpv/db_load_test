@@ -4,7 +4,6 @@ import time
 
 from flask import Flask, render_template, request, url_for
 from flask_autoindex import AutoIndex
-from flask_dropzone import Dropzone
 from pyspark.sql import SparkSession
 from werkzeug.utils import redirect, secure_filename
 
@@ -15,12 +14,12 @@ from jobs.report_builder import put_raw_data
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-ppath = "downloads"
+ppath = "download_reports"
 
 files_index = AutoIndex(app, browse_root=ppath, add_url_rules=False)
 
 
-@app.route("/downloads")
+@app.route("/download_reports")
 @app.route("/files/<path:path>")
 def autoindex(path="."):
     return files_index.render_autoindex(path)
