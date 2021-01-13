@@ -6,19 +6,24 @@ from st_utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 def param_occurances_multiple_values(input_str, param, param_list):
-    resutls = re.findall(rf'{param}:(.*?)#', input_str)
+    resutls = re.findall(rf"{param}:(.*?)#", input_str)
     for replace_values in resutls:
         random_param = ""
         for i in range(int(replace_values)):
             random_param = f"{random_param},'{random.choice(param_list)}'"
-        input_str = input_str.replace(f"${param}:{int(replace_values)}#", random_param.lstrip(","))
+        input_str = input_str.replace(
+            f"${param}:{int(replace_values)}#", random_param.lstrip(",")
+        )
     return input_str
+
 
 def param_occurances_single_value(input_str, param, param_list):
     random_param = random.choice(param_list)
     input_str = input_str.replace(f"${param}", f"'{random_param}'")
     return input_str
+
 
 def build_query(each_row, list_of_params, number_required):
     query_to_build = each_row.query
@@ -29,8 +34,12 @@ def build_query(each_row, list_of_params, number_required):
         if eval_param is not None:
             param_list = eval_param.rstrip(",").split(",")
             for i in range(number_required):
-                query_to_build = param_occurances_multiple_values(query_to_build, f"PARAM{idx}", param_list)
-                query_to_build = param_occurances_single_value(query_to_build, f"PARAM{idx}", param_list)
+                query_to_build = param_occurances_multiple_values(
+                    query_to_build, f"PARAM{idx}", param_list
+                )
+                query_to_build = param_occurances_single_value(
+                    query_to_build, f"PARAM{idx}", param_list
+                )
     tup_ret = (qid, query_to_build)
     print("tup_ret", tup_ret)
     return tup_ret

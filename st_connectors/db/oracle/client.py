@@ -2,14 +2,25 @@
 
 """
 import logging
+import zipfile
+from pathlib import Path
 
 import cx_Oracle
+
+from project_settings import get_root_path
 
 
 class OracleConnector:
     def __init__(self, conn_dict):
+        root_path = get_root_path()
+        if Path(f"{root_path}/instantclient_19_8").is_dir():
+            pass
+        else:
+            with zipfile.ZipFile(f"{root_path}/instantclient_19_8.zip", "r") as zip_ref:
+                zip_ref.extractall(f"{root_path}/instantclient_19_8")
+
         logging.info("Initiating Oracle database connection")
-        cx_Oracle.init_oracle_client("/Users/dc/instantclient_19_8")
+        cx_Oracle.init_oracle_client(f"{root_path}/instantclient_19_8")
 
         try:
             host = conn_dict["host"]

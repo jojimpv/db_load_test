@@ -63,9 +63,11 @@ def main(
     file_name = put_raw_data(db_type, db_connect, run_name, query_res_list, table_name)
     return file_name
 
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
+
 
 @app.route("/setup", methods=["GET", "POST"])
 def form():

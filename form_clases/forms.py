@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FileField, PasswordField, SelectField, StringField, IntegerField
+from wtforms import FileField, IntegerField, PasswordField, SelectField, StringField
 from wtforms.validators import InputRequired
 
 
@@ -9,7 +9,10 @@ class database_form(FlaskForm):
     db_type = SelectField(
         "Database Type", choices=[("Snowflake"), ("Oracle"), ("Postgres"), ("MySql")]
     )
-    host = StringField("Host Address", validators=[InputRequired()],)
+    host = StringField(
+        "Host Address",
+        validators=[InputRequired()],
+    )
     port = StringField("port", validators=[InputRequired()])
     username = StringField("username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
