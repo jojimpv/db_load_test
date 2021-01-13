@@ -42,4 +42,4 @@ def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
         writer = csv.writer(f)
         writer.writerow(["RUN NAME","REPORT NAME","RESULT(FIRST ROW_COL)","TIME"])
         writer.writerows(convert_str_to_list)
-    return f"downloads/{run_name}_{int_date}.csv"
+    return f"download_reports/{run_name}_{int_date}.csv"
