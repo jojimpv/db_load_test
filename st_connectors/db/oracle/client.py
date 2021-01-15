@@ -17,7 +17,7 @@ class OracleConnector:
             pass
         else:
             with zipfile.ZipFile(f"{root_path}/instantclient_19_8.zip", "r") as zip_ref:
-                zip_ref.extractall(f"{root_path}/instantclient_19_8")
+                zip_ref.extractall(f"{root_path}")
 
         logging.info("Initiating Oracle database connection")
         cx_Oracle.init_oracle_client(f"{root_path}/instantclient_19_8")
@@ -34,7 +34,7 @@ class OracleConnector:
             logging.info(f"Connection established to Oracle database at {host}:{port}")
         except cx_Oracle.Error as err:
             logging.error(
-                "Database connection failed due to postgres state {}".format(
+                "Database connection failed due to oracle state {}".format(
                     " ".join(err.args)
                 )
             )

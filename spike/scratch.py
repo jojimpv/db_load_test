@@ -1,12 +1,6 @@
-import zipfile
-from pathlib import Path
+from st_connectors.db.oracle.client import OracleConnector
 
-from project_settings import get_root_path
-
-root_path = get_root_path()
-if Path(f"{root_path}/instantclient_19_8").is_dir():
-    print("am here")
-    pass
-else:
-    with zipfile.ZipFile(f"{root_path}/instantclient_19_8.zip", "r") as zip_ref:
-        zip_ref.extractall(f"{root_path}/instantclient_19_8")
+conn_dict = {"host":"localhost", "username":"ot", "password":"Accion2020","sid":"OraDoc","port":"1527"}
+wh_db_connection = OracleConnector(conn_dict)
+results = wh_db_connection.execute_query("select * from customers where customer_id = '73'")
+print(results)
