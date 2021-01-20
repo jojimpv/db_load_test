@@ -1,6 +1,14 @@
-from st_connectors.db.oracle.client import OracleConnector
+from st_connectors.db.snowflake.client import SnowflakeConnector
 
-conn_dict = {"host":"localhost", "username":"ot", "password":"Accion2020","sid":"OraDoc","port":"1527"}
-wh_db_connection = OracleConnector(conn_dict)
-results = wh_db_connection.execute_query("select * from customers where customer_id = '73'")
+conn_dict = {
+    "host": "https://tq10634.us-east-1.snowflakecomputing.com",
+    "username": "IRP_DEV",
+    "password": "pASSWORD123",
+    "database": "SSR",
+    "role": "IRP_ACS_DEV",
+    "schema": "dev",
+    "warehouse": "WH_IRP_ETL",
+}
+wh_db_connection = SnowflakeConnector(conn_dict)
+results = wh_db_connection.execute_query("select * from account")
 print(results)

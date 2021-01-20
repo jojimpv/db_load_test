@@ -41,7 +41,6 @@ def build_query(each_row, list_of_params, number_required):
                     query_to_build, f"PARAM{idx}", param_list
                 )
     tup_ret = (qid, query_to_build)
-    print("tup_ret", tup_ret)
     return tup_ret
 
 

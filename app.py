@@ -10,12 +10,14 @@ from werkzeug.utils import redirect, secure_filename
 from form_clases.forms import database_form, run_form
 from jobs.common_functions import query_executor
 from jobs.report_builder import put_raw_data
+from st_utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 ppath = "download_reports"
-
 files_index = AutoIndex(app, browse_root=ppath, add_url_rules=False)
 
 
@@ -106,19 +108,22 @@ def run_test():
         if total_limit < len(query_id_list):
             total_limit = len(query_id_list)
         run_for = int(content["total_time"])
-        main(
-            spark,
-            db_type,
-            p_dict,
-            file_name,
-            run_name,
-            query_id_list=query_id_list,
-            total_limit=total_limit,
-            run_for=run_for,
-            table_name=table_name,
-        )
-        return redirect(url_for("autoindex"))
-    return render_template("run_test.html", form=form)
+        try:
+            main(
+                spark,
+                db_type,
+                p_dict,
+                file_name,
+                run_name,
+                query_id_list=query_id_list,
+                total_limit=total_limit,
+                run_for=run_for,
+                table_name=table_name,
+            )
+            return redirect(url_for("autoindex"))
+        except Exception as error:
+            logger.error(f"error executing run , error: {error}")
+            return render_template("bad_response.html", form=form, output=error)
 
 
 if __name__ == "__main__":

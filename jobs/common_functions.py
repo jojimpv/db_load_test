@@ -28,8 +28,7 @@ def force_async(fn):
 def execute_query(q_name, query, db_type, db_connect):
     connector_type = get_connector(db_type)
     connector = connector_type(db_connect)
-    logger.info("executing query")
-    print(query)
+    logger.info(f"executing query {query}")
     start_time = time.monotonic()
     result = connector.execute_query(query)
     end_time = time.monotonic()

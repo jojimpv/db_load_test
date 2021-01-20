@@ -14,7 +14,7 @@ class SettingsConnector:
                 if "ENV_FOR_DYNACONF" in os.environ:
                     settings.setenv(os.environ["ENV_FOR_DYNACONF"])
                 else:
-                    settings.setenv("development")
+                    settings.setenv("production")
         except Exception as error:
             logging.error(
                 f"error in SecretsConnector __init__() "

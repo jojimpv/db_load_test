@@ -1,11 +1,14 @@
-import logging
 import sys
+
+from st_utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class SnowflakeConnector:
     def __init__(self, conn_dict):
 
-        logging.info("Initiating snowflake database connection")
+        logger.info("Initiating snowflake database connection")
         try:
             self.sf_url = conn_dict["host"]
             self.sf_user = conn_dict["username"]
@@ -25,7 +28,7 @@ class SnowflakeConnector:
                 sfRole=self.sf_role,
             )
         except Exception as error:
-            logging.error(f"Snowflake connection failed - {error}")
+            logger.error(f"Snowflake connection failed - {error}")
 
     def execute_query(self, query):
         from snowflake.connector import connect
@@ -45,5 +48,5 @@ class SnowflakeConnector:
             cur.execute(query)
             return cur.sfqid
         except Exception as error:
-            logging.error(f"error in run_ddl_dml  {error}")
-            raise error.with_traceback(sys.exc_info()[2])
+            logger.error(f"error in execute_query  {error}")
+            raise

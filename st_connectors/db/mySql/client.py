@@ -88,7 +88,7 @@ class MySQLConnector:
             return None
         except Exception as error:
             logger.error(f'error executing query "{query}", error: {error}')
-            return None
+            raise
 
     def execute_commit(self):
         """
