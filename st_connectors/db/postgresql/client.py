@@ -1,15 +1,17 @@
 """
 
 """
-import logging
-
 import psycopg2
 import psycopg2.extras
+
+from st_utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class PostgresConnector:
     def __init__(self, conn_dict):
-        logging.info("Initiating postgres database connection")
+        logger.info("Initiating postgres database connection")
         self.connection = None
         try:
             host = conn_dict["host"]
@@ -33,21 +35,21 @@ class PostgresConnector:
                 "password": password,
                 "driver": "org.postgresql.Driver",
             }
-            logging.info(f"Connection established to postgres database using {using}")
+            logger.info(f"Connection established to postgres database using {using}")
         except psycopg2.Error as err:
-            logging.error(
+            logger.error(
                 "Database connection failed due to postgres state {}".format(
                     " ".join(err.args)
                 )
             )
 
     def __exit__(self):
-        logging.info("Closing postgres database connection")
+        logger.info("Closing postgres database connection")
         self._db_connection.close()
         return self._db_cur.close()
 
     def execute_query(self, query):
-        logging.debug(f"Executing {query} on postgres")
+        logger.debug(f"Executing {query} on postgres")
         try:
             self._db_cur.execute(query)
             result = self._db_cur
@@ -56,8 +58,8 @@ class PostgresConnector:
                     return row[0]
             return None
         except Exception as error:
-            logging.error(f'error executing query "{query}", error: {error}')
-            return None
+            logger.error(f'error executing query "{query}", error: {error}')
+            raise
         finally:
             self._db_connection.commit()
 
@@ -65,7 +67,7 @@ class PostgresConnector:
         try:
             self._db_connection.commit()
         except Exception as error:
-            logging.error(f"error in db commit {error}")
+            logger.error(f"error in db commit {error}")
             return True
         else:
             return False

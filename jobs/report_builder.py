@@ -9,7 +9,8 @@ logger = get_logger(__name__)
 
 def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
     convert_str_to_list = [
-        [   run_name,
+        [
+            run_name,
             i.rstrip("#").split("#")[0],
             i.rstrip("#").split("#")[1],
             i.rstrip("#").split("#")[2],
@@ -40,6 +41,11 @@ def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
     int_date = int(dt.strftime("%Y%m%d%H%M%S"))
     with open(f"download_reports/{run_name}_{int_date}.csv", "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["RUN NAME","REPORT NAME","RESULT(FIRST ROW_COL)","TIME"])
+        if db_type == "Snowflake":
+            writer.writerow(["RUN NAME", "REPORT NAME", "QUERY_ID", "TIME"])
+        else:
+            writer.writerow(
+                ["RUN NAME", "REPORT NAME", "RESULT(FIRST ROW_COL)", "TIME"]
+            )
         writer.writerows(convert_str_to_list)
-    return f"downloads/{run_name}_{int_date}.csv"
+    return f"download_reports/{run_name}_{int_date}.csv"
