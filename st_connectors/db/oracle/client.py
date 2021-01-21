@@ -53,26 +53,19 @@ class OracleConnector:
         logger.debug(f"Executing {query} on Oracle")
         try:
             self._db_cur.execute(query)
-            result = self._db_cur
-            if result is not None:
-                self._db_connection.commit()
-                for row in result:
-                    return row[0]
+            try:
+                result = self._db_cur.fetchall()
+                if result is not None:
+                    for row in result:
+                        return row[0]
+            except Exception:
+                pass
             return None
         except Exception as error:
             logger.error(f'error executing query "{query}", error: {error}')
             raise
         finally:
             self._db_connection.commit()
-
-    def run_ddl(self, query):
-        logger.debug(f"Executing {query} on Oracle")
-        try:
-            self._db_cur.execute(query)
-            result = self._db_cur
-        except Exception as error:
-            logger.error(f'error executing query "{query}", error: {error}')
-            raise
 
     def execute_commit(self):
         try:

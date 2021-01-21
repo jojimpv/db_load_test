@@ -44,10 +44,8 @@ def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
             query = f""" insert into {table_name} values
                             ( '{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')
                     """
-            if db_type == 'Oracle':
-                connector.run_ddl(query)
-            else:
-                connector.execute_query(query)
+
+            connector.execute_query(query)
             try:
                 connector.execute_commit()
             except Exception:
@@ -65,4 +63,5 @@ def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
                 ["RUN NAME", "REPORT NAME", "RESULT(FIRST ROW_COL)", "TIME"]
             )
         writer.writerows(convert_str_to_list)
+        logger.info("done creating report")
     return f"download_reports/{run_name}_{int_date}.csv"
