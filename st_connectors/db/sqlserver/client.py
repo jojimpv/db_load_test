@@ -9,7 +9,6 @@ logger = get_logger(__name__)
 
 
 class SqlServerConnector:
-
     def __init__(self, conn_dict):
         logger.info("Initiating postgres database connection")
         self.connection = None
@@ -19,7 +18,13 @@ class SqlServerConnector:
             password = conn_dict["password"]
             database = conn_dict["dbname"]
             port = conn_dict["port"]
-            self._db_connection = pymssql.connect(server=server, user=user, password=password,port=port,  database=database)
+            self._db_connection = pymssql.connect(
+                server=server,
+                user=user,
+                password=password,
+                port=port,
+                database=database,
+            )
             self._db_cur = self._db_connection.cursor()
             logger.info(f"Connection established to SQLServer database using {server}")
         except pymssql.Error as err:

@@ -24,7 +24,7 @@ class OracleConnector:
         logger.info("Initiating Oracle database connection")
         try:
             cx_Oracle.init_oracle_client(f"{root_path}/instantclient_19_8")
-        except cx_Oracle.Error as err:
+        except cx_Oracle.Error:
             pass
 
         try:

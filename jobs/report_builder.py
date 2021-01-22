@@ -22,7 +22,7 @@ def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
         connector_type = get_connector(db_type)
         connector = connector_type(db_connect)
         # Oracle does not have IF NOT EXISTS
-        if db_type == 'Oracle':
+        if db_type == "Oracle":
             t_query = f"select count(*) from dba_tables where upper(table_name)=upper('{table_name}') "
             result = connector.execute_query(t_query)
             if int(result) == 0:

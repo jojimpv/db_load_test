@@ -4,7 +4,6 @@ import time
 
 from flask import Flask, render_template, request, url_for
 from flask_autoindex import AutoIndex
-from pyspark.sql import SparkSession
 from werkzeug.utils import redirect, secure_filename
 
 from form_clases.forms import database_form, run_form
@@ -28,19 +27,9 @@ def autoindex(path="."):
 
 
 app.config["SECRET_KEY"] = "Thisisasecret!"
-spark = (
-    SparkSession.builder.appName("simple-sf-test")
-    .config(
-        "spark.jars.packages",
-        "net.snowflake:spark-snowflake_2.11:2.7.0-spark_2.4,"
-        "org.postgresql:postgresql:42.2.9.jre7",
-    )
-    .getOrCreate()
-)
 
 
 def main(
-    spark,
     db_type,
     db_connect,
     file_name,
@@ -55,7 +44,7 @@ def main(
     start_time = time.monotonic()
     while True:
         query_list = query_executor(
-            spark, db_type, db_connect, file_name, query_id_list, total_limit
+            db_type, db_connect, file_name, query_id_list, total_limit
         )
         query_res_list.extend(query_list)
         end_time = time.monotonic()
@@ -110,7 +99,6 @@ def run_test():
         run_for = int(content["total_time"])
         try:
             main(
-                spark,
                 db_type,
                 p_dict,
                 file_name,
