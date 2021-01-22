@@ -51,7 +51,6 @@ class PostgresConnector:
     def execute_query(self, query):
         logger.debug(f"Executing {query} on postgres")
         try:
-            curr = self._db_cur
             self._db_cur.execute(query)
             try:
                 result = self._db_cur.fetchall()

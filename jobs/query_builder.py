@@ -1,7 +1,8 @@
 import random
 import re
 
-from excel.client import ExcelConnector
+import pandas as pd
+
 from st_utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,7 +33,7 @@ def build_query(each_row, list_of_params, number_required):
         idx = idx + 1
         eval_param = eval(f"each_row.param{idx}")
         if eval_param is not None:
-            param_list = eval_param.rstrip(",").split(",")
+            param_list = str(eval_param).rstrip(",").split(",")
             for i in range(number_required):
                 query_to_build = param_occurances_multiple_values(
                     query_to_build, f"PARAM{idx}", param_list
@@ -44,22 +45,20 @@ def build_query(each_row, list_of_params, number_required):
     return tup_ret
 
 
-def create_query(spark, file_name, query_id_list, total_limit):
+def create_query(file_name, query_id_list, total_limit):
     total_queries_list = []
-    excel = ExcelConnector(file_name, "Sheet1")
-    query_df = excel.read_excel(spark)
+    query_df = pd.read_excel(file_name, sheet_name="Sheet1")
     param_cols = [i for i in query_df.columns if "param" in str(i).lower()]
     qid_str = [str(i) for i in query_id_list]
-    filter_str = ",".join(qid_str)
-    print("filter string", filter_str)
-    query_df = query_df.filter(f"qid in ({filter_str}) ")
-
+    query_df = query_df.loc[query_df["qid"].isin(qid_str)]
     count_of_query = len(query_id_list)
     limit_each = int(total_limit / count_of_query)
+    query_list = []
 
-    query_list = query_df.collect()
-
+    for i, row in enumerate(query_df.itertuples(), 1):
+        query_list.append(row)
     for idx, item in enumerate(query_list):
+        print(item)
         for i in range(limit_each):
             tup_ret = build_query(item, param_cols, limit_each)
             total_queries_list.append(tup_ret)

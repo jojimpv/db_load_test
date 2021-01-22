@@ -36,10 +36,8 @@ def execute_query(q_name, query, db_type, db_connect):
     return ret_result
 
 
-def query_executor(
-    spark, db_name, db_connect, file_name, query_id_list=None, total_limit=10
-):
-    query_list = create_query(spark, file_name, query_id_list, total_limit)
+def query_executor(db_name, db_connect, file_name, query_id_list=None, total_limit=10):
+    query_list = create_query(file_name, query_id_list, total_limit)
     start_time = time.monotonic()
     logger.info(f"time now: {datetime.utcnow()}")
 
