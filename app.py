@@ -5,17 +5,23 @@ import time
 from flask import Flask, render_template, request, url_for
 from flask_autoindex import AutoIndex
 from werkzeug.utils import redirect, secure_filename
+from pathlib import Path
 
 from form_clases.forms import database_form, run_form
 from jobs.common_functions import query_executor
 from jobs.report_builder import put_raw_data
+from project_settings import get_root_path
 from st_utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+root_path = get_root_path()
 
 app = Flask(__name__)
+if not Path(f"{root_path}/download_reports").is_dir():
+    os.mkdir(f"{root_path}/download_reports")
+
 ppath = "download_reports"
 files_index = AutoIndex(app, browse_root=ppath, add_url_rules=False)
 
@@ -63,6 +69,10 @@ def index():
 @app.route("/setup", methods=["GET", "POST"])
 def form():
     form = database_form()
+
+
+    if not Path(f"{root_path}/uploads").is_dir():
+        os.mkdir(f"{root_path}/uploads")
 
     if form.validate_on_submit():
         content = request.form.to_dict()
