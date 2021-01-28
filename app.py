@@ -76,14 +76,12 @@ def form():
 
     if form.validate_on_submit():
         content = request.form.to_dict()
-        print(form.file.data)
         filename = secure_filename(form.file.data.filename)
         content["filename"] = filename
         form.file.data.save("uploads/" + filename)
         env_name = content["env_name"]
         with open(f"/tmp/{env_name}", "wb") as fp:
             pickle.dump(content, fp)
-        print(content)
         return render_template("run_test.html", form=run_form())
     return render_template("form.html", form=form)
 
