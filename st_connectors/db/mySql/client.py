@@ -80,11 +80,13 @@ class MySQLConnector:
         print(f"Executing {query} on MySQL")
         try:
             self._db_cur.execute(query)
-            curr = self._db_cur
-            result = curr.fetchall()
-            if result is not None:
-                for row in result:
-                    return row[0]
+            try:
+                result = self._db_cur.fetchall()
+                if result is not None:
+                    for row in result:
+                        return row[0]
+            except Exception:
+                pass
             return None
         except Exception as error:
             logger.error(f'error executing query "{query}", error: {error}')

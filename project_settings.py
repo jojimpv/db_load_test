@@ -2,8 +2,9 @@ import os
 
 from st_connectors.key_vault.keyvault_secrets import SettingsConnector
 
-settings = SettingsConnector(dynaconf_file="/Users/dc/snow_test_suite/settings.toml")
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))  # This is your Project Root
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+settings = SettingsConnector(dynaconf_file=f"{ROOT_DIR}/settings.toml")
 
 
 def get_root_path():

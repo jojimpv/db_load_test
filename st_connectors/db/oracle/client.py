@@ -22,7 +22,10 @@ class OracleConnector:
                 zip_ref.extractall(f"{root_path}")
 
         logger.info("Initiating Oracle database connection")
-        cx_Oracle.init_oracle_client(f"{root_path}/instantclient_19_8")
+        try:
+            cx_Oracle.init_oracle_client(f"{root_path}/instantclient_19_8")
+        except cx_Oracle.Error:
+            pass
 
         try:
             host = conn_dict["host"]
@@ -50,11 +53,13 @@ class OracleConnector:
         logger.debug(f"Executing {query} on Oracle")
         try:
             self._db_cur.execute(query)
-            result = self._db_cur
-            if result is not None:
-                self._db_connection.commit()
-                for row in result:
-                    return row[0]
+            try:
+                result = self._db_cur.fetchall()
+                if result is not None:
+                    for row in result:
+                        return row[0]
+            except Exception:
+                pass
             return None
         except Exception as error:
             logger.error(f'error executing query "{query}", error: {error}')

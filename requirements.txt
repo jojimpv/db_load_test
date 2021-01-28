@@ -123,9 +123,9 @@ PyJWT==1.7.1
 pyOpenSSL==19.1.0
 pyparsing==2.4.7
 pyrsistent==0.16.0
-pyspark==2.4.5
 pystrict==1.1
 pytest==5.4.3
+pymssql==2.1.5
 pytest-spark==0.6.0
 python-box==3.4.6
 python-daemon==2.2.4
