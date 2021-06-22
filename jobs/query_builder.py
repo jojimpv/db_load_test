@@ -14,15 +14,20 @@ def param_occurances_multiple_values(input_str, param, param_list):
         random_param = ""
         for i in range(int(replace_values)):
             random_param = f"{random_param},'{random.choice(param_list)}'"
-        input_str = input_str.replace(
-            f"${param}:{int(replace_values)}#", random_param.lstrip(",")
+        # input_str = input_str.replace(
+        #     f"${param}:{int(replace_values)}#", random_param.lstrip(",")
+        param_is = f"\${param}"
+        input_str = re.sub(
+            rf"\B{param_is}\b:{int(replace_values)}#", random_param.lstrip(","), input_str
         )
+
     return input_str
 
 
 def param_occurances_single_value(input_str, param, param_list):
     random_param = random.choice(param_list)
-    input_str = input_str.replace(f"${param}", f"'{random_param}'")
+    param_is = f"\${param}"
+    input_str = re.sub(rf"\B{param_is}\b", f"'{random_param}'", input_str)
     return input_str
 
 
@@ -58,7 +63,6 @@ def create_query(file_name, query_id_list, total_limit):
     for i, row in enumerate(query_df.itertuples(), 1):
         query_list.append(row)
     for idx, item in enumerate(query_list):
-        print(item)
         for i in range(limit_each):
             tup_ret = build_query(item, param_cols, limit_each)
             total_queries_list.append(tup_ret)
