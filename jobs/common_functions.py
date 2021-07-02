@@ -36,7 +36,7 @@ def execute_query(q_name, query, db_type, db_connect):
     return ret_result
 
 
-def query_executor(db_name, db_connect, file_name, query_id_list=None, total_limit=10):
+def query_executor(db_name, db_connect, file_name, stagger_for, query_id_list=None, total_limit=10):
     query_list = create_query(file_name, query_id_list, total_limit)
     start_time = time.monotonic()
     logger.info(f"time now: {datetime.utcnow()}")
@@ -48,6 +48,7 @@ def query_executor(db_name, db_connect, file_name, query_id_list=None, total_lim
     try:
         for query in query_list:
             pg_result = execute_query(query[0], query[1], db_name, db_connect)
+            time.sleep(int(stagger_for))
             tasks.append(pg_result)
         logger.info(f"async tasks: {tasks}")
         futures, _ = loop.run_until_complete(asyncio.wait(tasks))

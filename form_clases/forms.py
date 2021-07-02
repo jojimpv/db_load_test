@@ -30,5 +30,6 @@ class run_form(FlaskForm):
     env_name = StringField("Env Name", validators=[InputRequired()])
     run_name = StringField("Run Name", validators=[InputRequired()])
     query_id = StringField("Query Id", validators=[InputRequired()])
+    stagger_for = StringField("Stagger For", validators=[InputRequired()])
     total_runs = IntegerField("Total Number of Runs", validators=[InputRequired()])
     total_time = IntegerField("Total Time", validators=[InputRequired()])

@@ -39,6 +39,7 @@ def main(
     db_type,
     db_connect,
     file_name,
+    stagger_for,
     run_name,
     query_id_list=None,
     total_limit=10,
@@ -50,7 +51,7 @@ def main(
     start_time = time.monotonic()
     while True:
         query_list = query_executor(
-            db_type, db_connect, file_name, query_id_list, total_limit
+            db_type, db_connect, file_name, stagger_for, query_id_list, total_limit
         )
         query_res_list.extend(query_list)
         end_time = time.monotonic()
@@ -97,6 +98,7 @@ def run_test():
         db_type = p_dict["db_type"]
         table_name = p_dict["table_name"]
         file_name = f"uploads/{p_dict['filename']}"
+        stagger_for = content["stagger_for"]
         run_name = content["run_name"]
         query_str = content["query_id"]
         query_str = query_str.replace(" ", "")
@@ -110,6 +112,7 @@ def run_test():
                 db_type,
                 p_dict,
                 file_name,
+                stagger_for,
                 run_name,
                 query_id_list=query_id_list,
                 total_limit=total_limit,

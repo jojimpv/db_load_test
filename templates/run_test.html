@@ -29,6 +29,7 @@
                   {{ render_field(form.env_name, placeholder='Enviornment Name set while setting up DB Details') }}
                   {{ render_field(form.run_name, placeholder='Give a unique Run Name to identify this run') }}
                   {{ render_field(form.query_id, placeholder='Enter the query id as comma separated values e.g 1,2,3') }}
+                  {{ render_field(form.stagger_for, placeholder='This will stagger the query submission e.g. value 2 means queries will be staggered by 2 seconds ') }}
                   {{ render_field(form.total_runs, placeholder='total runs: this is equivalent to number of concurrent users') }}
                   {{ render_field(form.total_time, placeholder='total time you want to run this test') }}
                   <div class="form-group">
