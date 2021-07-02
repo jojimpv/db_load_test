@@ -1,34 +1,19 @@
 import random
 import re
 
-import pandas as pd
+from pyspark.sql import SparkSession
 
+from excel.client import ExcelConnector
 from st_utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def param_occurances_multiple_values(input_str, param, param_list):
-    resutls = re.findall(rf"{param}:(.*?)#", input_str)
-    for replace_values in resutls:
-        random_param = ""
-        for i in range(int(replace_values)):
-            random_param = f"{random_param},'{random.choice(param_list)}'"
-        # input_str = input_str.replace(
-        #     f"${param}:{int(replace_values)}#", random_param.lstrip(",")
-        param_is = f"\${param}"
-        input_str = re.sub(
-            rf"\B{param_is}\b:{int(replace_values)}#", random_param.lstrip(","), input_str
-        )
+def find_between_r(given_str, first, last):
+    start = given_str.find(first) + 8
+    end = given_str.find(last, start)
+    return (given_str[start:end])
 
-    return input_str
-
-
-def param_occurances_single_value(input_str, param, param_list):
-    random_param = random.choice(param_list)
-    param_is = f"\${param}"
-    input_str = re.sub(rf"\B{param_is}\b", f"'{random_param}'", input_str)
-    return input_str
 
 
 def build_query(each_row, list_of_params, number_required):
@@ -38,32 +23,40 @@ def build_query(each_row, list_of_params, number_required):
         idx = idx + 1
         eval_param = eval(f"each_row.param{idx}")
         if eval_param is not None:
-            param_list = str(eval_param).rstrip(",").split(",")
+            param = eval_param.rstrip(',').split(",")
             for i in range(number_required):
-                query_to_build = param_occurances_multiple_values(
-                    query_to_build, f"PARAM{idx}", param_list
-                )
-                query_to_build = param_occurances_single_value(
-                    query_to_build, f"PARAM{idx}", param_list
-                )
+                random_param = random.choice(param)
+                param_rand = f"$PARAM{idx}:"
+                if param_rand in query_to_build:
+                    result = find_between_r(query_to_build,param_rand, "#")
+                    number_of_params = random.randint(1, int(result))
+                    to_replace = random.sample(param, number_of_params)
+                    to_replace = [f"'{i}'" for i in to_replace]
+                    to_rep_str = ",".join(to_replace)
+                    query_to_build = query_to_build.replace(f"$PARAM{idx}:{result}#", to_rep_str)
+                if f"$PARAM{idx}" in query_to_build:
+                    query_to_build = query_to_build.replace(f"$PARAM{idx}", f"'{random_param}'")
     tup_ret = (qid, query_to_build)
     return tup_ret
 
 
-def create_query(file_name, query_id_list, total_limit):
+def create_query(spark, file_name, query_id_list, total_limit=20):
     total_queries_list = []
-    query_df = pd.read_excel(file_name, sheet_name="Sheet1")
-    param_cols = [i for i in query_df.columns if "param" in str(i).lower()]
+    excel = ExcelConnector(file_name, "Sheet1")
+    query_df = excel.read_excel(spark)
+    param_cols = [i  for i in query_df.columns if "param" in str(i).lower()]
     qid_str = [str(i) for i in query_id_list]
-    query_df = query_df.loc[query_df["qid"].isin(qid_str)]
-    count_of_query = len(query_id_list)
-    limit_each = int(total_limit / count_of_query)
-    query_list = []
+    filter_str = ",".join(qid_str)
+    query_df = query_df.filter(f'qid in ({filter_str}) ')
 
-    for i, row in enumerate(query_df.itertuples(), 1):
-        query_list.append(row)
+    count_of_query = len(query_id_list)
+    limit_each = int(total_limit/count_of_query)
+
+    query_list = query_df.collect()
+
     for idx, item in enumerate(query_list):
         for i in range(limit_each):
             tup_ret = build_query(item, param_cols, limit_each)
             total_queries_list.append(tup_ret)
     return total_queries_list
+

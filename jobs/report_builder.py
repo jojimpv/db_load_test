@@ -1,67 +1,137 @@
-import csv
+from time import sleep
 from datetime import datetime
+from pyspark import Row
+from pyspark.sql.functions import lit
+from pyspark.sql.types import StructType, StringType, StructField
 
+from st_connectors.db.snowflake.client import SnowflakeConnector
 from st_utils.logger import get_logger
-from st_utils.utils import get_connector
+from project_settings import settings
 
 logger = get_logger(__name__)
+snow = SnowflakeConnector(sf_url= settings.sfUrl,
+                          sf_user=settings.SFUSER,
+                          sf_password=settings.SFPASSWORD,
+                          sf_role=settings.SFROLE,
+                          sf_warehouse=settings.SFWAREHOUSE,
+                          sf_schema=settings.SFSCHEMA,
+                          sf_database=settings.SFDATABASE)
 
 
-def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
-    logger.info("executing put_raw_data")
-    convert_str_to_list = [
-        [
-            run_name,
-            i.rstrip("#").split("#")[0],
-            i.rstrip("#").split("#")[1],
-            i.rstrip("#").split("#")[2],
-        ]
-        for i in result_list
-    ]
-    if table_name != "":
-        connector_type = get_connector(db_type)
-        connector = connector_type(db_connect)
-        # Oracle does not have IF NOT EXISTS
-        if db_type == "Oracle":
-            t_query = f"select count(*) from dba_tables where upper(table_name)=upper('{table_name}') "
-            result = connector.execute_query(t_query)
-            if int(result) == 0:
-                connector.run_ddl(
-                    f"""create table {table_name} (RUN_NAME varchar(200),
-                                                                    QUERY_NAME varchar(100),
-                                                                    query_id varchar(200), python_time varchar(200)
-                                                                )"""
-                )
-        else:
-            connector.execute_query(
-                f"""create table {table_name} IF NOT EXISTS (RUN_NAME varchar(200),
-                                                    QUERY_NAME varchar(100),
-                                                    query_id varchar(200), python_time varchar(200)
-                                                )"""
-            )
+def put_raw_data(spark, run_name, result_list):
+    convert_str_to_list = [[i.rstrip("#").split("#")[0], i.rstrip("#").split("#")[1],
+                           i.rstrip("#").split("#")[2]] for i in result_list]
 
-        for row in convert_str_to_list:
-            query = f""" insert into {table_name} values
-                            ( '{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')
-                    """
+    schema = StructType([
+    StructField("QUERY_NAME", StringType()),
+    StructField("QUERY_ID", StringType()),
+    StructField("PYTHON_TIME", StringType())
+    ])
+    df = spark.createDataFrame(data=convert_str_to_list, schema=schema)
+    df = df.withColumn("RUN_NAME", lit(run_name))
+    snow.write_dataframe(df, "python_runs")
 
-            connector.execute_query(query)
-            try:
-                connector.execute_commit()
-            except Exception:
-                pass
 
-    dt = datetime.now()
-    int_date = int(dt.strftime("%Y%m%d%H%M%S"))
-    logger.info("Creating csv")
-    with open(f"download_reports/{run_name}_{int_date}.csv", "w", newline="") as f:
-        writer = csv.writer(f)
-        if db_type == "Snowflake":
-            writer.writerow(["RUN NAME", "REPORT NAME", "QUERY_ID", "TIME"])
-        else:
-            writer.writerow(
-                ["RUN NAME", "REPORT NAME", "RESULT(FIRST ROW_COL)", "TIME"]
-            )
-        writer.writerows(convert_str_to_list)
-        logger.info("done creating report")
-    return f"download_reports/{run_name}_{int_date}.csv"
+def build_report(spark, run_name, result_list):
+    dt = datetime.utcnow().strftime("%Y-%m-%d-%H:%M")
+    unique_run_name = f"{run_name}_{dt}"
+    put_raw_data(spark, unique_run_name, result_list)
+    query = f'''
+        insert into cancer_test_runs (
+                RUN_NAME,
+                QUERY_ID,
+                WAREHOUSE_NAME,
+                WAREHOUSE_SIZE,
+                WAREHOUSE_TYPE,
+                CLUSTER_NUMBER,
+                QUERY_TAG
+                EXECUTION_STATUS,
+                ERROR_CODE,
+                ERROR_MESSAGE,
+                START_TIME,
+                END_TIME,
+                TOTAL_ELAPSED_TIME,
+                BYTES_SCANNED,
+                PERCENTAGE_SCANNED_FROM_CACHE,
+                PARTITIONS_SCANNED,
+                PARTITIONS_TOTAL,
+                COMPILATION_TIME,
+                EXECUTION_TIME
+                QUEUED_PROVISIONING_TIME,
+                QUEUED_REPAIR_TIME,
+                QUEUED_OVERLOAD_TIME,
+                TRANSACTION_BLOCKED_TIME,
+                CREDITS_USED_CLOUD_SERVICES,
+                QUERY_LOAD_PERCENT,
+                QUERY_NAME,
+                PYTHON_TIME
+    )
+    select 
+        a.RUN_NAME,
+        b.QUERY_ID,
+        b.WAREHOUSE_NAME,
+        b.WAREHOUSE_SIZE,
+        b.WAREHOUSE_TYPE,
+        b.CLUSTER_NUMBER,
+        b.QUERY_TAG,
+        b.EXECUTION_STATUS,
+        b.ERROR_CODE,
+        b.ERROR_MESSAGE,
+        b.START_TIME,
+        b.END_TIME,
+        b.TOTAL_ELAPSED_TIME,
+        b.BYTES_SCANNED,
+        b.PERCENTAGE_SCANNED_FROM_CACHE,
+        b.PARTITIONS_SCANNED,
+        b.PARTITIONS_TOTAL,
+        b.COMPILATION_TIME,
+        b.EXECUTION_TIME,
+        b.QUEUED_PROVISIONING_TIME,
+        b.QUEUED_REPAIR_TIME,
+        b.QUEUED_OVERLOAD_TIME,
+        b.TRANSACTION_BLOCKED_TIME,
+        b.CREDITS_USED_CLOUD_SERVICES,
+        b.QUERY_LOAD_PERCENT,
+        a.QUERY_NAME,
+        a.PYTHON_TIME
+        from SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY b, python_runs a
+    where a.QUERY_ID = b.QUERY_ID
+'''
+    snow.run_ddl_dml_without_spark(query)
+
+'''
+select 
+        a.RUN_NAME,
+        b.TOTAL_ELAPSED_TIME,
+        a.PYTHON_TIME,
+        b.QUERY_ID,
+        b.WAREHOUSE_NAME,
+        b.WAREHOUSE_SIZE,
+        b.WAREHOUSE_TYPE,
+        b.CLUSTER_NUMBER,
+        b.QUERY_TAG,
+        b.EXECUTION_STATUS,
+        b.ERROR_CODE,
+        b.ERROR_MESSAGE,
+        b.START_TIME,
+        b.END_TIME,
+        b.BYTES_SCANNED,
+        b.PERCENTAGE_SCANNED_FROM_CACHE,
+        b.PARTITIONS_SCANNED,
+        b.PARTITIONS_TOTAL,
+        b.COMPILATION_TIME,
+        b.EXECUTION_TIME,
+        b.QUEUED_PROVISIONING_TIME,
+        b.QUEUED_REPAIR_TIME,
+        b.QUEUED_OVERLOAD_TIME,
+        b.TRANSACTION_BLOCKED_TIME,
+        b.CREDITS_USED_CLOUD_SERVICES,
+        b.QUERY_LOAD_PERCENT,
+        a.QUERY_NAME
+        from SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY b, python_runs a
+    where a.QUERY_ID = b.QUERY_ID
+    and upper(a.run_name) like '%RUN_WITHOUT_FETCH%'
+    and b.warehouse_name = 'WH_IRP_CANCER'
+    and b.user_name = 'Q845332_CANCER' 
+    and database_id = 408
+'''

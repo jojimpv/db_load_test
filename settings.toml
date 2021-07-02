@@ -4,9 +4,10 @@ LOG_LEVEL = 'INFO'
 LOG_FORMAT = '[%(asctime)s] [%(levelname)s] [%(message)s] [--> %(pathname)s [%(process)d]:]'
 LOG_FILE_LOCATION = '/tmp/'
 POSTGRES_SERVER_DRIVER = "org.postgresql.Driver"
-CONNECTOR='{"Oracle":"OracleConnector", "Snowflake":"SnowflakeConnector", "Postgres":"PostgresConnector", "MySql":"MySQLConnector"}'
-
-[production]
-
-
-[development]
+sfUrl='https://tq10634.us-east-1.snowflakecomputing.com'
+SFUSER='Q845332_CANCER'
+SFPASSWORD='Welcome1'
+SFDATABASE='UAT_CANCER'
+SFSCHEMA='PUBLIC'
+SFWAREHOUSE='WH_IRP_CANCER'
+SFROLE='IRP_ACS_CANCER_DEV'
