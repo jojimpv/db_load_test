@@ -7,7 +7,7 @@ from st_utils.utils import get_connector
 logger = get_logger(__name__)
 
 
-def put_raw_data(db_type, db_connect, run_name, result_list, table_name):
+def put_raw_data(db_type, db_connect, run_name, result_list, table_name, root_path):
     logger.info("executing put_raw_data")
     convert_str_to_list = [
         [

@@ -22,7 +22,7 @@ app = Flask(__name__)
 if not Path(f"{root_path}/download_reports").is_dir():
     os.mkdir(f"{root_path}/download_reports")
 
-ppath = "download_reports"
+ppath = f"{root_path}/download_reports"
 files_index = AutoIndex(app, browse_root=ppath, add_url_rules=False)
 
 
@@ -58,7 +58,7 @@ def main(
         time.sleep(2)
         if end_time - start_time > run_for:
             break
-    file_name = put_raw_data(db_type, db_connect, run_name, query_res_list, table_name)
+    file_name = put_raw_data(db_type, db_connect, run_name, query_res_list, table_name, root_path)
     return file_name
 
 
@@ -79,7 +79,7 @@ def form():
         content = request.form.to_dict()
         filename = secure_filename(form.file.data.filename)
         content["filename"] = filename
-        form.file.data.save("uploads/" + filename)
+        form.file.data.save(f"{root_path}/uploads/" + filename)
         env_name = content["env_name"]
         with open(f"/tmp/{env_name}", "wb") as fp:
             pickle.dump(content, fp)
@@ -97,7 +97,7 @@ def run_test():
             p_dict = pickle.load(fp)
         db_type = p_dict["db_type"]
         table_name = p_dict["table_name"]
-        file_name = f"uploads/{p_dict['filename']}"
+        file_name = f"{root_path}/uploads/{p_dict['filename']}"
         stagger_for = content["stagger_for"]
         run_name = content["run_name"]
         query_str = content["query_id"]

@@ -1,3 +1,4 @@
+from st_connectors.db.hive.client import HiveConnector
 from st_connectors.db.mySql.client import MySQLConnector
 from st_connectors.db.oracle.client import OracleConnector
 from st_connectors.db.postgresql.client import PostgresConnector
@@ -13,3 +14,5 @@ def get_connector(db_type):
         return PostgresConnector
     if db_type == "MySql":
         return MySQLConnector
+    if db_type == "Hive":
+        return HiveConnector

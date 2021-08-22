@@ -7,7 +7,7 @@ class database_form(FlaskForm):
 
     env_name = StringField("Enviornment Name", validators=[InputRequired()])
     db_type = SelectField(
-        "Database Type", choices=[("Snowflake"), ("Oracle"), ("Postgres"), ("MySql")]
+        "Database Type", choices=[("Snowflake"), ("Oracle"), ("Postgres"), ("MySql"), ("Hive")]
     )
     host = StringField(
         "Host Address",
@@ -15,7 +15,7 @@ class database_form(FlaskForm):
     )
     port = StringField("port", validators=[InputRequired()])
     username = StringField("username", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired()])
+    password = PasswordField("Password")
     dbname = StringField("Database Name")
     table_name = StringField("Table Name")
     sid = StringField("Oracle Database SID")
