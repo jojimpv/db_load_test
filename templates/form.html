@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,54 +12,55 @@
 
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
-    
-    <link href="{{ url_for('static', filename='theme.css') }}" rel="stylesheet">
-  </head>
 
-  <body>
+    <link href="{{ url_for('static', filename='theme.css') }}" rel="stylesheet">
+</head>
+
+<body>
 
     <div class="container theme-showcase" role="main">
 
         <div class="row">
-          <div class="col-lg-12">
-            <div class="well bs-component">
-              <form class="form-horizontal" method="POST" enctype="multipart/form-data" action="{{ url_for('form') }}">
-                {{ form.csrf_token }}
-                <fieldset>
-                  <legend>Add Database Details</legend>
-                  {{ render_field(form.env_name, placeholder='Remember this Env Name. This will not be displayed for security reasons') }}
-                  {{ render_field(form.db_type) }}
-                  {{ render_field(form.host, placeholder="Snowflake full URL for snowflake, host address for other Databases ") }}
-                  {{ render_field(form.port, placeholder=form.port.label.text) }}
-                  {{ render_field(form.username, placeholder=form.username.label.text) }}
-                  {{ render_field(form.password, placeholder=form.password.label.text) }}
-                  {{ render_field(form.dbname, placeholder="Required only for Postgres and MYSql") }}
-                  {{ render_field(form.table_name, placeholder="Enter a Table Name to store Results. Leave Blank if you do not have write access") }}
+            <div class="col-lg-12">
+                <div class="well bs-component">
+                    <form class="form-horizontal" method="POST" enctype="multipart/form-data"
+                          action="{{ url_for('form') }}">
+                        {{ form.csrf_token }}
+                        <fieldset>
+                            <legend>Add Database Details</legend>
+                            {{ render_field(form.env_name, placeholder='Remember this Env Name. This will not be displayed for security reasons') }}
+                            {{ render_field(form.db_type) }}
+                            {{ render_field(form.host, placeholder="Snowflake full URL for snowflake, host address for other Databases ") }}
+                            {{ render_field(form.port, placeholder=form.port.label.text) }}
+                            {{ render_field(form.username, placeholder=form.username.label.text) }}
+                            {{ render_field(form.password, placeholder=form.password.label.text) }}
+                            {{ render_field(form.dbname, placeholder="Required only for Postgres and MYSql") }}
+                            {{ render_field(form.table_name, placeholder="Enter a Table Name to store Results. Leave Blank if you do not have write access") }}
 
-                  <legend>Upload your SQL Excel File</legend>
-                  {{ render_field(form.file, placeholder=form.file.label.text) }}
+                            <legend>Upload your SQL Excel File</legend>
+                            {{ render_field(form.file, placeholder=form.file.label.text) }}
 
-                  <legend>Below is mandatory for Oracle Database</legend>
-                  {{ render_field(form.sid, placeholder=form.sid.label.text) }}
+                            <legend>Below is mandatory for Oracle Database</legend>
+                            {{ render_field(form.sid, placeholder=form.sid.label.text) }}
 
 
-                  <legend>Below are mandatory for Snowflake</legend>
-                  {{ render_field(form.role, placeholder=form.role.label.text) }}
-                  {{ render_field(form.warehouse, placeholder=form.warehouse.label.text) }}
-                  {{ render_field(form.schema, placeholder=form.schema.label.text) }}
-                  {{ render_field(form.database, placeholder=form.database.label.text) }}
-                  <div class="form-group">
-                    <div class="col-lg-10 col-lg-offset-2">
-                      <button type="reset" class="btn btn-default">Cancel</button>
-                      <button type="submit" class="btn btn-primary">Next</button>
-                    </div>
-                  </div>
-                </fieldset>
-              </form>
+                            <legend>Below are mandatory for Snowflake</legend>
+                            {{ render_field(form.role, placeholder=form.role.label.text) }}
+                            {{ render_field(form.warehouse, placeholder=form.warehouse.label.text) }}
+                            {{ render_field(form.schema, placeholder=form.schema.label.text) }}
+                            {{ render_field(form.database, placeholder=form.database.label.text) }}
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Next</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
             </div>
-          </div>
 
-    </div> <!-- /container -->
-
-  </body>
+        </div> <!-- /container -->
+    </div>
+</body>
 </html>
