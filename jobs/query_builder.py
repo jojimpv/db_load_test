@@ -12,8 +12,9 @@ def param_occurances_multiple_values(input_str, param, param_list):
     resutls = re.findall(rf"{param}:(.*?)#", input_str)
     for replace_values in resutls:
         random_param = ""
-        for i in range(int(replace_values)):
-            random_param = f"{random_param},'{random.choice(param_list)}'"
+        random_sample = random.sample(param_list, k=random.randint(1, int(replace_values)))
+        random_sample_str = ','.join([f"'{x}'" for x in random_sample])
+        random_param = f"{random_param},{random_sample_str}"
         # input_str = input_str.replace(
         #     f"${param}:{int(replace_values)}#", random_param.lstrip(",")
         param_is = f"\${param}"
